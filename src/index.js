@@ -56,6 +56,14 @@ const getLocalIpAddress = () => {
   return 'localhost';
 };
 
+const formatSkipDetail = (type, title, metadata) => {
+  if (type !== 'episode') return title;
+  const { grandparentTitle: showTitle, year, parentIndex: season, index: episode } = metadata ?? {};
+  const s = String(season).padStart(2, '0');
+  const e = String(episode).padStart(2, '0');
+  return `${showTitle}${year ? ` (${year})` : ''} - S${s}E${e} - ${title}`;
+};
+
 app.post('/plex', upload.single('thumb'), async (req, res) => {
   let payload;
 
@@ -94,6 +102,15 @@ app.post('/plex', upload.single('thumb'), async (req, res) => {
       logger.error(`❌ ${chalk.red(`User ${name} is not in the list of allowed users: ${process.env.PLEX_USER}`)}`);
       return res.status(403).json({ error: 'User not allowed' });
     }
+  }
+
+  const libraryTitle = payload?.Metadata?.librarySectionTitle || payload?.librarySectionTitle;
+  const excludedLibraries = process.env.EXCLUDED_LIBRARIES?.trim().toLowerCase().split(',').map(l => l.trim()) ?? [];
+
+  if (libraryTitle && excludedLibraries.includes(libraryTitle.trim().toLowerCase())) {
+    const skipDetail = formatSkipDetail(type, title, payload?.Metadata);
+    logger.info(`🚫 Library "${libraryTitle}" is excluded. Skipping ${skipDetail}.`);
+    return res.status(200).json({ message: 'Excluded library' });
   }
 
   try {

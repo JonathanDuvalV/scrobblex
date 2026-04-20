@@ -156,13 +156,14 @@ services:
 
 ## 📄 Environment Variables
 
-| Variable     | Default   | Required | Description                                                              |
-| ------------ | --------- | -------- | ------------------------------------------------------------------------ |
-| TRAKT_ID     | undefined | Yes      | Trakt application ID                                                     |
-| TRAKT_SECRET | undefined | Yes      | Trakt application secret                                                 |
-| PLEX_USER    | undefined | No       | Plex username (comma separated list if you want to allow multiple users) |
-| PORT         | 3090      | No       | Exposed express port                                                     |
-| LOG_LEVEL    | info      | No       | winston log level: ie: info, debug                                       |
+| Variable          | Default   | Required | Description                                                              |
+| ----------------- | --------- | -------- | ------------------------------------------------------------------------ |
+| TRAKT_ID          | undefined | Yes      | Trakt application ID                                                     |
+| TRAKT_SECRET      | undefined | Yes      | Trakt application secret                                                 |
+| PLEX_USER         | undefined | No       | Plex username (comma separated list if you want to allow multiple users) |
+| EXCLUDED_LIBRARIES| undefined | No       | Plex library names to exclude from scrobbling (comma separated)          |
+| PORT              | 3090      | No       | Exposed express port                                                     |
+| LOG_LEVEL         | info      | No       | winston log level: ie: info, debug                                       |
 
 
 
@@ -215,6 +216,7 @@ Alternatively, you can find it by going to your [account settings](https://app.p
     "title": "<episode>{episode_name}</episode><movie>{title}</movie>",
     "type": "{media_type}",
     "year": "{year}",
+    "librarySectionTitle": "{library_name}",
     "Guid": [
       {
         "id": "imdb://{imdb_id}"
@@ -231,6 +233,16 @@ Alternatively, you can find it by going to your [account settings](https://app.p
 ```
 
 and click Save
+
+#### How to exclude specific libraries from scrobbling
+
+If you want to exclude certain Plex libraries (e.g., anime tracked by AniList), set the `EXCLUDED_LIBRARIES` environment variable to a comma-separated list of library names:
+
+```
+EXCLUDED_LIBRARIES=Anime,Music
+```
+
+**Note for Tautulli users:** The Tautulli JSON template above includes `"librarySectionTitle": "{library_name}"` which is required for this feature to work with Tautulli. If you're using native Plex webhooks, the library title is included automatically.
 
 (Optional): If you have multiple users on the same plex server, open Conditions tab and add Username is [select your username]
 Go back to Tautulli Settings and click Restart

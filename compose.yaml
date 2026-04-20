@@ -9,5 +9,6 @@ services:
       - TRAKT_ID=$TRAKT_ID
       - TRAKT_SECRET=$TRAKT_SECRET
       - LOG_LEVEL=$LOG_LEVEL
+      - EXCLUDED_LIBRARIES=$EXCLUDED_LIBRARIES
     volumes:
       - ./scrobblex:/app/data
